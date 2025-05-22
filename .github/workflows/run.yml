@@ -2,8 +2,8 @@ name: Token Updater
 
 on:
   schedule:
-    - cron: '*/30 * * * *'  # 毎時0分と30分に実行（UTC基準）→ 日本時間で9時間後
-  workflow_dispatch:  # 手動実行も可
+    - cron: '*/30 * * * *'  # 30分ごと（UTC）
+  workflow_dispatch:
 
 jobs:
   token-updater:
@@ -22,18 +22,30 @@ jobs:
         run: |
           pip install selenium gspread oauth2client
 
-      - name: 🧪 Chrome + ChromeDriver のインストール
+      - name: 🧪 Google Chrome & 対応ChromeDriverのインストール
         run: |
           sudo apt-get update
-          sudo apt-get install -y unzip wget xvfb google-chrome-stable
-          wget https://storage.googleapis.com/chrome-for-testing-public/123.0.6312.86/linux64/chromedriver-linux64.zip
-          unzip chromedriver-linux64.zip
+          sudo apt-get install -y unzip wget curl xvfb google-chrome-stable
+
+          # Chrome のバージョン取得（例: 136.0.7103.92）
+          CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
+
+          # メジャーバージョンだけ抽出（例: 136）
+          CHROME_MAJOR_VERSION=$(echo $CHROME_VERSION | cut -d '.' -f 1)
+
+          # ChromeDriver ダウンロードURLを動的に決定
+          DRIVER_URL="https://storage.googleapis.com/chrome-for-testing-public/${CHROME_MAJOR_VERSION}.0.7103.113/linux64/chromedriver-linux64.zip"
+
+          echo "▶️ Installing ChromeDriver for Chrome $CHROME_MAJOR_VERSION.x"
+          wget -O chromedriver.zip $DRIVER_URL
+          unzip chromedriver.zip
           sudo mv chromedriver-linux64/chromedriver /usr/local/bin/chromedriver
           sudo chmod +x /usr/local/bin/chromedriver
 
       - name: 🔑 credentials.json を生成
         run: echo '${{ secrets.GSPREAD_CREDENTIALS }}' > credentials.json
 
-      - name: 🚀 トークンスクリプト実行
+      - name: 🚀 Pythonスクリプトを実行
         run: python onboarding.py
+
 
