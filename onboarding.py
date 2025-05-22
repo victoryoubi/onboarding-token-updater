@@ -77,7 +77,7 @@ def write_token_to_sheets(token):
     client = gspread.authorize(creds)
 
     sheet = client.open(SPREADSHEET_NAME).worksheet(WORKSHEET_NAME)
-    sheet.update(TOKEN_CELL, [[token]])  # ← [[]] で2次元リストに
+    sheet.update(range_name=TOKEN_CELL, values=[[token]])  # ← [[]] で2次元リストに
     print(f"✅ トークンを「{WORKSHEET_NAME}!{TOKEN_CELL}」に書き込みました。")
 
 
