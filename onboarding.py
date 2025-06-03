@@ -8,8 +8,9 @@ from selenium.webdriver.chrome.options import Options
 from oauth2client.service_account import ServiceAccountCredentials
 
 # === 設定 ===
-CREDENTIALS_FILE = "credentials.json"  # GitHub Actionsで生成される
-SPREADSHEET_NAME = "250522_Onboarding施策分析シート"
+# === 設定 ===
+CREDENTIALS_FILE = "credentials.json"
+SHEET_URL = "https://docs.google.com/spreadsheets/d/1LMFTRPSatRItP384317LrBNUDUD83Qy8qfolcMCrQf8/edit#gid=1611679230"
 WORKSHEET_NAME = "設定"
 TOKEN_CELL = "F1"
 
@@ -76,8 +77,9 @@ def write_token_to_sheets(token):
     creds = ServiceAccountCredentials.from_json_keyfile_name(CREDENTIALS_FILE, scope)
     client = gspread.authorize(creds)
 
-    sheet = client.open(SPREADSHEET_NAME).worksheet(WORKSHEET_NAME)
-    sheet.update(range_name=TOKEN_CELL, values=[[token]])  # ← [[]] で2次元リストに
+    # URLでスプレッドシートを指定
+    sheet = client.open_by_url(SHEET_URL).worksheet(WORKSHEET_NAME)
+    sheet.update(range_name=TOKEN_CELL, values=[[token]])
     print(f"✅ トークンを「{WORKSHEET_NAME}!{TOKEN_CELL}」に書き込みました。")
 
 
