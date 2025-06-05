@@ -8,7 +8,6 @@ from selenium.webdriver.chrome.options import Options
 from oauth2client.service_account import ServiceAccountCredentials
 
 # === 設定 ===
-# === 設定 ===
 CREDENTIALS_FILE = "credentials.json"
 SHEET_URL = "https://docs.google.com/spreadsheets/d/1LMFTRPSatRItP384317LrBNUDUD83Qy8qfolcMCrQf8/edit#gid=1611679230"
 WORKSHEET_NAME = "設定"
@@ -18,36 +17,33 @@ EMAIL = "b.fujioka@mov.am"
 PASSWORD = "Vic18miracle@"
 
 
+import undetected_chromedriver as uc  # 追加
+
 def fetch_token():
-    options = Options()
-    options.add_argument("--headless")
+    options = uc.ChromeOptions()
+    options.add_argument("--headless")  # 画面表示しない（必要なら外してもOK）
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--window-size=1200,800")
 
-    driver = webdriver.Chrome(options=options)
+    driver = uc.Chrome(options=options)  # ★ここが通常のwebdriver.Chrome()との違い
 
     try:
         print("🔐 トークン取得中...")
 
-        # ログインページへアクセス
         driver.get("https://manage.onboarding-app.io")
         time.sleep(3)
 
-        # ログイン処理
         driver.find_element(By.ID, "email").send_keys(EMAIL)
         driver.find_element(By.ID, "password").send_keys(PASSWORD)
         driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
 
-        # ダッシュボードに遷移するまで待機
         WebDriverWait(driver, 15).until(lambda d: "dashboard" in d.current_url)
         print("✅ ログイン成功:", driver.current_url)
 
-        # レポートページへ遷移
         driver.get("https://manage.onboarding-app.io/report?period=last_thirty_days&type=popup")
         time.sleep(3)
 
-        # トークンをlocalStorageから取得（最大10回リトライ）
         token = None
         for _ in range(10):
             token = driver.execute_script("return localStorage.getItem('api_token');")
