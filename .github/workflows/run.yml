@@ -2,7 +2,7 @@ name: Token Updater
 
 on:
   schedule:
-    - cron: '*/30 * * * *'  # 30分ごと（UTC）
+    - cron: '*/20 * * * *'  # 20分ごと（UTC）
   workflow_dispatch:
 
 jobs:
