@@ -25,6 +25,9 @@ jobs:
       - name: 🔑 credentials.json を生成
         run: echo '${{ secrets.GSPREAD_CREDENTIALS }}' > credentials.json
 
+      - name: Chromeバージョン確認
+        run: google-chrome --version
+
       - name: 🚀 Pythonスクリプトを実行
         run: python onboarding.py
 
