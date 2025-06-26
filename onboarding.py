@@ -5,26 +5,25 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from oauth2client.service_account import ServiceAccountCredentials
+import subprocess
 
-# === 設定 ===
-CREDENTIALS_FILE = "credentials.json"
-SHEET_URL = "https://docs.google.com/spreadsheets/d/1LMFTRPSatRItP384317LrBNUDUD83Qy8qfolcMCrQf8/edit#gid=1611679230"
-WORKSHEET_NAME = "設定"
-TOKEN_CELL = "F1"
-
-EMAIL = "b.fujioka@mov.am"
-PASSWORD = "Vic18miracle@"
-
+# ...（設定省略）
 
 def fetch_token():
     options = uc.ChromeOptions()
-    options.add_argument("--headless")  # デバッグ時はコメントアウト可
+    options.add_argument("--headless")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--window-size=1200,800")
 
-    driver = uc.Chrome(options=options)
+    # --- ここが自動同期のポイント ---
+    result = subprocess.run(["google-chrome", "--version"], stdout=subprocess.PIPE, text=True)
+    version_str = result.stdout.strip()
+    main_version = int(version_str.split()[2].split('.')[0])
+    print(f"Detected Chrome version: {main_version}")
 
+    driver = uc.Chrome(options=options, version_main=main_version)
+    
     try:
         print("🔐 トークン取得中...")
 
