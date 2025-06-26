@@ -7,7 +7,14 @@ from selenium.webdriver.support import expected_conditions as EC
 from oauth2client.service_account import ServiceAccountCredentials
 import subprocess
 
-# ...（設定省略）
+# === 設定 ===
+CREDENTIALS_FILE = "credentials.json"
+SHEET_URL = "https://docs.google.com/spreadsheets/d/1LMFTRPSatRItP384317LrBNUDUD83Qy8qfolcMCrQf8/edit#gid=1611679230"
+WORKSHEET_NAME = "設定"
+TOKEN_CELL = "F1"
+
+EMAIL = "b.fujioka@mov.am"
+PASSWORD = "Vic18miracle@"
 
 def fetch_token():
     options = uc.ChromeOptions()
